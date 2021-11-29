@@ -1,26 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { createContext } from 'react';
+import './App.scss';
+import Loading from './components/Loading/Loading';
+import Mixer from './components/Mixer/Mixer';
+import SecondRow from './components/SecondRow/SecondRow';
+import TopRow from './components/TopRow/TopRow';
+//import TrackNames from './components/Tracks/TrackNames/TrackNames';
+import Tracks from './components/Tracks/Tracks';
+import { MasterData } from './services/MasterData';
+import spaceTime from './services/spaceTime';
+
+export const masterData = new MasterData();
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+   const user = 'Angela';
+   return (
+      <div className="App antialiased">
+         <Loading />
+         <TopRow user={user} projects={['Test1', 'test2', 'Test3']} />
+         <SecondRow />
+         <Mixer />
+         <section className="sound-clips">
+            {/*<TrackNames />*/}
+            <Tracks />
+         </section>
+      </div>
+   );
 }
 
 export default App;

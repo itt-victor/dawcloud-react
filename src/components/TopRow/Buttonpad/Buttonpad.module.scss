@@ -1,0 +1,12 @@
+.Buttonpad {
+   display: flex;
+   width: 550px;
+   justify-content: space-between;
+   height: 40px;
+
+   img {
+      vertical-align: top;
+      width: 25px !important;
+      height: 25px;
+   }
+}

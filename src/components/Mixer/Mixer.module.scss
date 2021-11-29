@@ -1,0 +1,12 @@
+.Mixer {
+   height: 400px;
+   width: 405px;
+   border-radius: 7px;
+   position: absolute;
+   background-color: grey;
+   top: 250px;
+   left: 100px;
+   display: flex;
+   flex-wrap: wrap;
+   align-content: flex-start;
+}
