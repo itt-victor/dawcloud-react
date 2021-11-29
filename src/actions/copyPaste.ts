@@ -1,10 +1,9 @@
 import drawingServices from "../services/drawingServices";
 import { masterData} from "../App";
-import RecordingData from "../components/Recording/Recording";
 import spaceTime from "../services/spaceTime";
 import { generateRecordingId } from "../services/utils";
 
-const copyPaste = (recording: RecordingData) => {
+const copyPaste = (recording: any) => {
 
    interface KeysPressed {
       [k: string]: boolean;

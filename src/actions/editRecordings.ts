@@ -5,7 +5,7 @@ import spaceTime from "../services/spaceTime";
 import { onMousePos } from "../services/utils";
 import { WebAudio } from "../services/WebAudio";
 
-const editRecording = (recording: RecordingData) => {
+const editRecording = (recording: any) => {
 /* 
    //arrastrar grabaciones
 

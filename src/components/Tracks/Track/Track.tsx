@@ -1,84 +1,43 @@
-import React, { createRef } from "react";
-import { masterData} from "../../../App";
+import React, { useRef, useState } from "react";
+import { masterData } from "../../../App";
 import { WebAudio } from "../../../services/WebAudio";
 
-interface props {
-   trackNumber: number;
-}
-interface states {
-   muteOn: boolean;
-   soloOn: boolean;
-   soloCLass: string;
-   muteClass: string;
-}
+const Track = (props: any) => {
 
-export default class Track extends React.Component<props, states> {
+   const [trackNumber, setTrackNumber] = useState(props.trackNumber);
 
-   private _trackNumber: number;
-   public get trackNumber(): number { return this._trackNumber; }
-   public set trackNumber(number: number) { this._trackNumber = number }
+   //public parent: this;
+   //fader: HTMLElement;
+   const [Y, setY] = useState(20);
+   const [pannerValue, setPannerValue] = useState('C');
+   const [gainValue, setGainValue] = useState(1);
+   const [name, setName] = useState();
+   const [mute, setMute] = useState(false);
+   const [solo, setSolo] = useState(false);
+   const [recordings, setRecording] = useState([]);
 
-   public parent: this;
-   fader: HTMLElement;
-   Y: number;
+   const pannerNode = WebAudio.audioCtx.createStereoPanner();
+   const gainNode = WebAudio.audioCtx.createGain();
+   pannerNode.connect(gainNode);
+   gainNode.connect(masterData.gainNode);
+   const ref = useRef<HTMLElement>(null);
 
-   private _pannerValue: string;
-   public get pannerValue(): string {
-      return this._pannerValue;
-   }
-   public set pannerValue(value: string) {
-      this._pannerValue = value;
-   }
+   const [soloClass, setSoloClass] = useState('track_solo');
+   const [muteClass, setMuteClass] = useState('track_mute');
 
-   private _gainValue: number;
-   public get gainValue(): number {
-      return this._gainValue;
-   }
-   public set gainValue(value: number) {
-      this._gainValue = value;
-   }
+//      this.fader = document.getElementById(`fader_${this.props.trackNumber}`) as HTMLInputElement;
+   //   masterData.tracks.push(this);
 
-   private _name!: string;
-   get name(): string {
-      return this._name;
-   }
-   set name(value: string) {
-      this._name = value;
-   }
-   pannerNode = WebAudio.audioCtx.createStereoPanner();
-   gainNode = WebAudio.audioCtx.createGain();
-   ref = createRef<HTMLElement>();
-   trackDOMElement: HTMLElement = this.ref.current as HTMLElement;
-
-   constructor(props: any) {
-
-      super(props);
-      this.state = {
-         muteOn: false,
-         soloOn: false,
-         soloCLass: 'track_solo',
-         muteClass: 'track_mute'
-      };
-
-      this._trackNumber = this.props.trackNumber;
-      this._pannerValue = 'C';
-      this._gainValue = 1;
-      this.parent = this;
-      this.fader = document.getElementById(`fader_${this.props.trackNumber}`) as HTMLInputElement;
-      this.Y = 20;
-
-      this.pannerNode.connect(this.gainNode);
-      this.gainNode.connect(masterData.gainNode);
-      masterData.tracks.push(this);
-   }
-
-   SoloButton = () => {
-
+   const SoloButton = () => {
       const handleSolo = () => {
-
-         (!this.state.soloOn) ? 
-         this.setState({soloOn: true, soloCLass: 'track_solo track_solo_on'}) :
-         this.setState({soloOn: false, soloCLass: 'track_solo'});
+         
+         if (!solo){
+            setSoloClass('track_solo track_solo_on');
+            setSolo(true);
+         } else {
+            setSoloClass('track_solo');
+            setSolo(false);
+         }
 
          for (const track of masterData.tracks) {
             
@@ -97,45 +56,49 @@ export default class Track extends React.Component<props, states> {
             else if (track.state.muteOn) return;
             else WebAudio.solo(track);
          }
-      }
+      } 
 
-      return <button type="button" className={this.state.soloCLass} id={`solo_${this.props.trackNumber}`}
+      return <button type="button" className={soloClass} id={`solo_${trackNumber}`}
          onClick={handleSolo} >S</button>;
    }
 
-   MuteButton = () => {
+   const MuteButton = () => {
       const handleMute = () => {
+         if (!mute) {            
+            gainNode.gain.setValueAtTime(0, WebAudio.audioCtx.currentTime);
+            setMuteClass('track_mute track_mute_on');
+            setMute(true);
+            console.log(muteClass);
+            
+         } else {
+            gainNode.gain.setValueAtTime(gainValue, WebAudio.audioCtx.currentTime);
+            setMuteClass('track_mute');
+            setMute(false);
+            console.log(muteClass);
 
-         if (!this.state.muteOn) {
-            WebAudio.mute(this.gainNode);
-            this.setState({ muteOn: true });
-            this.setState({ muteClass: `track_mute track_mute_on` });
-         } else if (this.state.muteOn) {
-            WebAudio.solo(this);
-            this.setState({ muteOn: false });
-            this.setState({ muteClass: `track_mute` });
          }
-         for (const track of masterData.tracks) {
-            if (track.state.muteOn) WebAudio.mute(track.gainNode);
-         }
+         /* for (const track of masterData.tracks) {
+            if (track.state.muteOn) track.gainNode.gain.setValueAtTime(0, WebAudio.audioCtx.currentTime);
+         } */
       }
 
-      return (<button type="button" className={this.state.muteClass} id={`mute_${this.props.trackNumber}`}
+      return (<button type="button" className={muteClass} id={`mute_${trackNumber}`}
          onClick={handleMute} >M</button>);
    }
 
-   render() {
-      return (
-         <div className="newBox" >
-            <div className="track_name" id={`track_name_${this.props.trackNumber}`} >
-               <button className="select" >Track {this.props.trackNumber + 1}</button>
-               <this.SoloButton />
-               <this.MuteButton />
-               <input type="text" className="input" autoComplete="false" placeholder="Name your track" />
-            </div>
-            <div className="track" data-testid="Track" id={`track_${this.props.trackNumber}`} >
-            </div>
+   return (
+      <div className="newBox" >
+         <div className="track_name" id={`track_name_${trackNumber}`} >
+            <button className="select" >Track {trackNumber + 1}</button>
+            <SoloButton />
+            <MuteButton />
+            <input type="text" className="input" autoComplete="false" placeholder="Name your track" />
          </div>
-      );
-   }
+         <div className="track" data-testid="Track" id={`track_${trackNumber}`} >
+         </div>
+      </div>
+   );
+
 }
+
+export default Track;

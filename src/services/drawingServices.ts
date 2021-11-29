@@ -3,19 +3,6 @@ import spaceTime from "./spaceTime";
 
 const drawingServices = {
 
-   cursor() {
-      const canvas = document.querySelector('#cursor') as HTMLCanvasElement;
-      canvas.width = 5;
-      canvas.height = 60 * spaceTime.howMany + 30;
-      canvas.style.left = '150px';
-      canvas.style.zIndex = '10';
-      const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-      ctx.fillStyle = 'black';
-      ctx.globalCompositeOperation = 'destination-over';
-      ctx.globalAlpha = 0.8;
-      ctx.fillRect(0, 0, 5, canvas.height);
-   },
-
    layout() {
       const layout = document.querySelector('#layout') as HTMLCanvasElement;
       layout.height = 30; layout.width = 10000;

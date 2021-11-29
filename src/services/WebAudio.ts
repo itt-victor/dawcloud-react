@@ -10,7 +10,7 @@ export class WebAudio {
    static audioBufferSources = [] as AudioBufferSourceNode[];
 
    static async playSound() {
-      const play = async (recording: Recording) => {
+      const play = async (recording: any) => {
          const source = this.audioCtx.createBufferSource();
          source.buffer = recording.audioBuffer;
          source.connect(masterData.tracks[recording.tracknumber].pannerNode);
@@ -38,11 +38,11 @@ export class WebAudio {
       this.audioBufferSources = [];
    }
 
-   static stopSingleSound(recording: Recording) {
+   static stopSingleSound(recording: any) {
       recording.audioBufferSource?.stop();
    }
 
-   static playWhileDragging(recording: Recording) {
+   static playWhileDragging(recording: any) {
       recording.audioBufferSource?.stop();
       const source = this.audioCtx.createBufferSource();
       source.buffer = recording.audioBuffer;
@@ -67,7 +67,7 @@ export class WebAudio {
       gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime);
    }
 
-   static solo(track: Track) {
+   static solo(track: any) {
       track.gainNode.gain.setValueAtTime(track.gainValue, this.audioCtx.currentTime);
    }
    /* 

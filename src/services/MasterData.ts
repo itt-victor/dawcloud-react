@@ -22,8 +22,8 @@ export class MasterData {
    }
 
    gainNode: GainNode;
-   //tracks: Track[] = [];
-   //recordings: Array<Recording> = [];
+   tracks: any = [];
+   recordings: Array<any> = [];
    solo: boolean;
 
    /* quita esto */ canvas = document.createElement('canvas');

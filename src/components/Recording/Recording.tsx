@@ -180,6 +180,8 @@ const Recording = (props: RecordArgs) => {
 
 }
 
+export default Recording;
+
 export interface RecordArgs {
    recordingId: string;
    trackNumber: number;

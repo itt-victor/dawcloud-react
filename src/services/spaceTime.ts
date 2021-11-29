@@ -2,7 +2,7 @@
 //const snap_ratio = document.querySelector('#snap_ratio') as HTMLSelectElement;
 
 const spaceTime: SpaceTime = {
-   space: 0,
+   space: 150,
 
    time() {
       let time = this.space / this.zoom;

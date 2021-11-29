@@ -10,8 +10,8 @@ import drawingServices from '../services/drawingServices';
 import { masterData} from "../App";
 import Recording from '../components/Recording/Recording';
 
-const cutRecording = (recording: RecordingData) => {
-
+const cutRecording = (recording: any) => {
+/* 
    recording.canvas.addEventListener("click", function (evt) {
 
       const mousePos = onMousePos(this, evt);
@@ -77,7 +77,7 @@ const cutRecording = (recording: RecordingData) => {
          cutButton.disabled = false;
       });
 
-   });
+   }); */
 }
 
 
