@@ -66,7 +66,7 @@ const Buttonpad = () => {
                    WebAudio.audioCtx.decodeAudioData(arrayBuffer, audioBuffer => {
                        const track = parseInt((document.querySelector('[data-selected]') as HTMLElement).id.charAt(6));
                        const latency = 0.01; //LATENCIA, HAY QUE MIRAR ESTO BIEN
-                       const args: any = {
+                       const args = {
                            recordingId: generateRecordingId(),
                            timeToStart: startTime -  latency,
                            audioBuffer,

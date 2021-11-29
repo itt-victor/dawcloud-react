@@ -1,6 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { Dispatch, JSXElementConstructor, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import { masterData } from "../../../App";
 import { WebAudio } from "../../../services/WebAudio";
+import Recording, { RecordArgs } from "../../Recording/Recording";
+import { recordingCtx } from "../../../App"; 
 
 const Track = (props: any) => {
 
@@ -14,7 +16,11 @@ const Track = (props: any) => {
    const [name, setName] = useState();
    const [mute, setMute] = useState(false);
    const [solo, setSolo] = useState(false);
-   const [recordings, setRecording] = useState([]);
+
+   //const [recordings, setRecording] = useState<JSX.Element[]>([]);
+   const [recordings, setRecording] = useState<JSX.Element[]>([]) as [JSX.Element[], Dispatch<SetStateAction<JSX.Element[]>>];
+
+   const addRecording = useContext(recordingCtx);
 
    const pannerNode = WebAudio.audioCtx.createStereoPanner();
    const gainNode = WebAudio.audioCtx.createGain();
@@ -60,7 +66,7 @@ const Track = (props: any) => {
 
       return <button type="button" className={soloClass} id={`solo_${trackNumber}`}
          onClick={handleSolo} >S</button>;
-   }
+   };
 
    const MuteButton = () => {
       const handleMute = () => {
@@ -84,7 +90,14 @@ const Track = (props: any) => {
 
       return (<button type="button" className={muteClass} id={`mute_${trackNumber}`}
          onClick={handleMute} >M</button>);
-   }
+   };
+
+   useEffect(() => {
+      addRecording(recordings, setRecording).map((Recording) => {
+         if (Recording.props.trackNumber === trackNumber)
+            setRecording([...recordings, Recording])
+      });
+   }, [recordings, Y, pannerValue, gainValue, name, mute, solo, addRecording]);
 
    return (
       <div className="newBox" >
@@ -95,6 +108,9 @@ const Track = (props: any) => {
             <input type="text" className="input" autoComplete="false" placeholder="Name your track" />
          </div>
          <div className="track" data-testid="Track" id={`track_${trackNumber}`} >
+            {recordings.length && recordings.map((Recording, i) => 
+               Recording
+            )}
          </div>
       </div>
    );

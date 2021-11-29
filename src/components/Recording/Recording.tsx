@@ -7,12 +7,6 @@ import editRecording from "../../actions/editRecordings";
 import cutRecording from "../../actions/cutRecordings";
 import copyPaste from "../../actions/copyPaste";
 
-//if (!this.copy) this.drawwaveforms();
-editRecording(this);
-cutRecording(this);
-copyPaste(this);
-//removeRecording(this);
-
 
 const Recording = (props: RecordArgs) => {
 
@@ -166,10 +160,10 @@ const Recording = (props: RecordArgs) => {
 
    useEffect(() => {
 
-      if (copy) drawWaveforms();
-      editRecording(this);
+      if (!copy) drawWaveforms();
+      /* editRecording(this);
       cutRecording(this);
-      copyPaste(this);
+      copyPaste(this); */
       //removeRecording(this);
 
    }, [])
