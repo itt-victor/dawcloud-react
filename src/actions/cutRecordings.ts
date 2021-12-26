@@ -5,9 +5,7 @@ import { generateRecordingId } from '../services/utils';
 //import { removeRecording } from './actions';
 import { onMousePos } from '../services/utils';
 import RecordingData from '../components/Recording/Recording';
-import spaceTime from '../services/spaceTime';
 import drawingServices from '../services/drawingServices';
-import { masterData} from "../App";
 import Recording from '../components/Recording/Recording';
 
 const cutRecording = (recording: any) => {

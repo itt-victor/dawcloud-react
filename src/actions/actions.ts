@@ -31,27 +31,6 @@ export const loading = () => {
     if (xButton) xButton.addEventListener('click', () => signupReminder.style.display = 'none');
 })();
 
-//SELECT TRACK
-(() => {
-    const tracks = document.getElementsByClassName("track") as HTMLCollection;
-    const trackNames = document.getElementsByClassName("track_name") as HTMLCollection;
-    for (const track of tracks) {
-        track.addEventListener('mousedown', e => {
-            for (const unTrack of tracks)
-                unTrack.removeAttribute('data-selected');
-            (e.currentTarget as HTMLElement).setAttribute('data-selected', '');
-        });
-    }
-    for (const name of trackNames) {
-        name.addEventListener('click', e => {
-            const index = parseInt((e.currentTarget as HTMLElement).id.charAt(11));
-            for (const track of tracks) track.removeAttribute('data-selected');
-            tracks[index].setAttribute('data-selected', '');
-        });
-    }
-
-})();
-
 //CHANGE TRACK NAME
 (() => {
     const names = document.querySelectorAll('.select');
@@ -160,57 +139,6 @@ export const loading = () => {
             for (const input of inputs) if (e.target == input) return;
             zOut();
         }
-    });
-})();
-
-//SET BPM
-(() => {
-    const bpmButton = document.getElementById('bpm_button') as HTMLButtonElement;
-    let input: HTMLInputElement;
-    bpmButton.innerHTML = `${Math.round(120 / timeSpace.bpm)}  bpm`;
-    bpmButton.addEventListener('click', e => {
-        e.stopPropagation();
-        if (!document.getElementById('bpm_value')) {
-            bpmButton.innerHTML = '';
-            input = document.createElement('input');
-            input.id = 'bpm_value';
-            input.style.width = '80px';
-            input.setAttribute('placeholder', 'set tempo');
-            bpmButton.appendChild(input);
-            input.focus();
-        }
-        window.addEventListener('click', function br(a) {
-            if (!(a.target as HTMLElement).contains(e.currentTarget as HTMLElement)) {
-                input.remove();
-                bpmButton.innerHTML = `${Math.round(120 / timeSpace.bpm)}  bpm`;
-                this.removeEventListener('click', br);
-            }
-        });
-        input.addEventListener('keypress', function (o) {
-            if (o.key === 'Enter') {
-                o.preventDefault();
-                timeSpace.bpm = 120 / parseInt(this.value);
-                bpmButton.innerHTML = `${Math.round(120 / timeSpace.bpm)}  bpm`;
-                input.remove();
-                drawGrid(); drawLayout();
-            }
-        });
-    });
-})();
-
-//TIME SIGNATURE (4/4 3/4)
-(() => {
-    const metricButton = document.getElementById('metric_button') as HTMLElement;
-    metricButton.innerHTML = '4/4';
-    metricButton.addEventListener('click', () => {
-        if (metricButton.textContent == '4/4') {
-            metricButton.innerHTML = '3/4';
-            timeSpace.compas = 1.5;
-        } else {
-            metricButton.innerHTML = '4/4';
-            timeSpace.compas = 2;
-        }
-        drawGrid(); drawLayout();
     });
 })();
 

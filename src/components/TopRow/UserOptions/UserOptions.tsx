@@ -1,27 +1,27 @@
 import React from 'react';
-import spaceTime from '../../../services/spaceTime';
 import { generateRecordingId } from '../../../services/utils';
-import { masterData} from "../../../App";
-import { WebAudio } from '../../../services/WebAudio';
 import styles from './UserOptions.module.scss';
 
 const UserOptions = (props: any) => {
+   const spaceTime: any = {}
+   const webAudio: any = {}
+   //const { spaceTime, webAudio } = useContext(ctx);
 
-   const loadSound = (a: Event) => {
+   const loadSound = (a: React.FormEvent) => {
 
       //loading(); eStop();
       const reader = new FileReader();
       reader.onload = e => {
          const trcknr = parseInt((document.querySelector('[data-selected]') as HTMLElement).id.charAt(6));
-         WebAudio.audioCtx.decodeAudioData((e.target as FileReader).result as ArrayBuffer).then(audioBuffer => {
-            const args: any/*RecordArgs*/ = {
+         webAudio.audioCtx.decodeAudioData((e.target as FileReader).result as ArrayBuffer, (audioBuffer: AudioBuffer) => {
+           /*  const args: args = {
                recordingId: generateRecordingId(),
                timeToStart: spaceTime.time(),
                audioBuffer,
                offset: 0,
                duration: audioBuffer.duration,
-               copy: false
-            };
+               copy: false 
+            }; */
             //masterData.tracks[trcknr].addRecord(args);
          });
       }
@@ -62,7 +62,7 @@ const UserOptions = (props: any) => {
             <button id="user_welcome" type="button" className="btn dropdown-toggle" data-bs-toggle="dropdown"
                aria-haspopup="true" aria-expanded="false">Hello {props.user}</button>
             <div className="dropdown-menu" aria-labelledby="user_welcome">
-               <button id="load_project" className="btn btn-outline-info dropdown-item">My projects</button>
+               <button id="load_project" className="btn btn-outline-info dropdown-item" onChange={loadSound} >My projects</button>
                <button id="save_project" className="btn btn-outline-info dropdown-item">Save</button>
                <button id="save_project_as" className="btn btn-outline-info dropdown-item">Save as</button>
                <label id="load_sound" htmlFor="load_sound_hidden"

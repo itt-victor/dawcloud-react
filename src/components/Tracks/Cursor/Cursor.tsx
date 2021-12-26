@@ -1,12 +1,18 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import drawingServices from '../../../services/drawingServices';
-import spaceTime from '../../../services/spaceTime';
-import service from './Cursor.service';
-import styles from './Cursor.module.scss';
+import React, { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { cursor, isDrawn } from './cursorSlice';
 
 const Cursor = () => {
-
-   useEffect(() => { service.draw(); });
+   const { zoom } = useAppSelector(state => state.spaceTime);
+   const dispatch = useAppDispatch();
+   const [drawn, setDrawn] = useState(false);
+   React.useEffect(() => {
+      if (!drawn) {
+         dispatch(cursor('draw'));
+         setDrawn(true);
+      }
+      dispatch(cursor('move'));
+   }, [zoom]);
 
    return (
       <canvas id="cursor" />

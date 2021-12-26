@@ -1,8 +1,10 @@
 import React from 'react';
-import spaceTime from '../../services/spaceTime';
+import { useAppSelector } from '../../app/hooks';
 import styles from './Mixer.module.scss';
 
 const Mixer = () => {
+
+const spaceTime = useAppSelector(state => state.spaceTime);
 
    return (
       <div className={styles.Mixer} data-testid="Mixer" id="mixer" >

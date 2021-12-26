@@ -1,25 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import spaceTime from '../../services/spaceTime';
-import Recording from '../Recording/Recording';
+import React from 'react';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import Cursor from './Cursor/Cursor';
 import Grid from './Grid/Grid';
 import Layout from './Layout/Layout';
 import Track from './Track/Track';
 import styles from './Tracks.module.scss';
+import { handleSelection } from './tracksSlice';
 
 const Tracks = () => {
-   const [tracks, setTracks] = useState<JSX.Element[]>([]);
-   const [recordings, setRecordings] = useState<JSX.Element[]>([]);
-   const trackList: JSX.Element[] = [];
-   const recordingList: JSX.Element[] = [];
 
-
-
-   for (let i = 0; i < spaceTime.howMany; i++) {
-      trackList.push(<Track trackNumber={i} key={i} />);      
-   }
-
-//   useEffect(() => );
+   const spaceTime = useAppSelector(state => state.spaceTime);
+   const selectedTracks = useAppSelector(state => state.tracks.selectedTracks);
+   const dispatch = useAppDispatch();
 
    return (
       <div className={styles.Tracks} data-testid="Tracks" id="tracks">
@@ -29,8 +21,11 @@ const Tracks = () => {
          <canvas id="grid-selector" />
          <Cursor />
          <Layout />
-         <Grid />
-         {[...trackList]}
+         <Grid /> 
+         {[...Array(spaceTime.howMany)].map((a, i) =>
+            <Track trckNmber={i} selectedTrack={selectedTracks[i]}
+               handleSelection={() => dispatch(handleSelection(i))} key={i} />
+         )}
       </div>
    );
 }

@@ -1,9 +1,6 @@
 import drawingServices from "../services/drawingServices";
-import { masterData} from "../App";
 import RecordingData from "../components/Recording/Recording";
-import spaceTime from "../services/spaceTime";
 import { onMousePos } from "../services/utils";
-import { WebAudio } from "../services/WebAudio";
 
 const editRecording = (recording: any) => {
 /* 

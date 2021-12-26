@@ -1,120 +1,66 @@
-import React, { Dispatch, JSXElementConstructor, SetStateAction, useContext, useEffect, useRef, useState } from "react";
-import { masterData } from "../../../App";
-import { WebAudio } from "../../../services/WebAudio";
-import Recording, { RecordArgs } from "../../Recording/Recording";
-import { recordingCtx } from "../../../App"; 
+import React from "react";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { handleMute, handleSolo } from "./trackSlice";
+import draw from "../../../services/drawingServices";
+import { RecordingType } from "../../Recording/RecordingSlice";
 
-const Track = (props: any) => {
+const Track = ({ selectedTrack, trckNmber, handleSelection }: any) => {
+   const allRecordings = useAppSelector(state => state.recordings.recordings);
+   const [trackRecordings, setTrackRecordings] = React.useState<RecordingType[]>([]);
 
-   const [trackNumber, setTrackNumber] = useState(props.trackNumber);
+   const addRecording = (recording: RecordingType) => {
+      const aux = [...trackRecordings];
+      aux.push(recording)
+      setTrackRecordings(aux);
+   }
+   const [setUp, isSetup] = React.useState(false);
 
-   //public parent: this;
-   //fader: HTMLElement;
-   const [Y, setY] = useState(20);
-   const [pannerValue, setPannerValue] = useState('C');
-   const [gainValue, setGainValue] = useState(1);
-   const [name, setName] = useState();
-   const [mute, setMute] = useState(false);
-   const [solo, setSolo] = useState(false);
+   const dispatch = useAppDispatch();
+   const trackData = useAppSelector(state => state.track.list[trckNmber]);
+   const masterData = useAppSelector(state => state.masterBus);
+   const { solo, mute } = useAppSelector(state => state.track.list[trckNmber]);
+   const { isRecording } = useAppSelector(state => state.buttonPad);
 
-   //const [recordings, setRecording] = useState<JSX.Element[]>([]);
-   const [recordings, setRecording] = useState<JSX.Element[]>([]) as [JSX.Element[], Dispatch<SetStateAction<JSX.Element[]>>];
-
-   const addRecording = useContext(recordingCtx);
-
-   const pannerNode = WebAudio.audioCtx.createStereoPanner();
-   const gainNode = WebAudio.audioCtx.createGain();
-   pannerNode.connect(gainNode);
-   gainNode.connect(masterData.gainNode);
-   const ref = useRef<HTMLElement>(null);
-
-   const [soloClass, setSoloClass] = useState('track_solo');
-   const [muteClass, setMuteClass] = useState('track_mute');
-
-//      this.fader = document.getElementById(`fader_${this.props.trackNumber}`) as HTMLInputElement;
-   //   masterData.tracks.push(this);
-
-   const SoloButton = () => {
-      const handleSolo = () => {
-         
-         if (!solo){
-            setSoloClass('track_solo track_solo_on');
-            setSolo(true);
-         } else {
-            setSoloClass('track_solo');
-            setSolo(false);
-         }
-
-         for (const track of masterData.tracks) {
-            
-            if (track.state.soloOn) {
-               masterData.solo = true;
-               break;
-            }
-            else masterData.solo = false;
-         }
-         for (const track of masterData.tracks) {
-            if (masterData.solo) {
-               (track.state.soloOn) ?
-                  WebAudio.solo(track) :
-                  WebAudio.mute(track.gainNode);
-            }
-            else if (track.state.muteOn) return;
-            else WebAudio.solo(track);
-         }
-      } 
-
-      return <button type="button" className={soloClass} id={`solo_${trackNumber}`}
-         onClick={handleSolo} >S</button>;
-   };
-
-   const MuteButton = () => {
-      const handleMute = () => {
-         if (!mute) {            
-            gainNode.gain.setValueAtTime(0, WebAudio.audioCtx.currentTime);
-            setMuteClass('track_mute track_mute_on');
-            setMute(true);
-            console.log(muteClass);
-            
-         } else {
-            gainNode.gain.setValueAtTime(gainValue, WebAudio.audioCtx.currentTime);
-            setMuteClass('track_mute');
-            setMute(false);
-            console.log(muteClass);
-
-         }
-         /* for (const track of masterData.tracks) {
-            if (track.state.muteOn) track.gainNode.gain.setValueAtTime(0, WebAudio.audioCtx.currentTime);
-         } */
+   React.useEffect(() => {
+      if (!setUp) {
+         trackData.pannerNode.connect(trackData.gainNode);
+         trackData.gainNode.connect(masterData.gainNode);
+         isSetup(true);
       }
+      if (isRecording && selectedTrack !== '') dispatch(draw('recordingTrack'));
 
-      return (<button type="button" className={muteClass} id={`mute_${trackNumber}`}
-         onClick={handleMute} >M</button>);
-   };
-
-   useEffect(() => {
-      addRecording(recordings, setRecording).map((Recording) => {
-         if (Recording.props.trackNumber === trackNumber)
-            setRecording([...recordings, Recording])
-      });
-   }, [recordings, Y, pannerValue, gainValue, name, mute, solo, addRecording]);
+      for (const i in allRecordings) {
+         allRecordings[i].trackNumber === trckNmber && addRecording(allRecordings[i]);
+      }
+   }, [isRecording, mute, solo, selectedTrack, allRecordings]);
 
    return (
-      <div className="newBox" >
-         <div className="track_name" id={`track_name_${trackNumber}`} >
-            <button className="select" >Track {trackNumber + 1}</button>
-            <SoloButton />
-            <MuteButton />
+      <div className="newBox" onClick={handleSelection}>
+         <div className="track_name" id={`track_name_${trckNmber}`} >
+            <button className="select" >Track {trckNmber + 1}</button>
+            <SoloButton solo={solo} trckNmber={trckNmber} />
+            <MuteButton mute={mute} trckNmber={trckNmber} />
             <input type="text" className="input" autoComplete="false" placeholder="Name your track" />
          </div>
-         <div className="track" data-testid="Track" id={`track_${trackNumber}`} >
-            {recordings.length && recordings.map((Recording, i) => 
-               Recording
+         <div className={"track " + selectedTrack} data-testid="Track" id={`track_${trckNmber}`} >
+            {trackRecordings.map((Recording: RecordingType, i: number) =>
+               <Recording.Component id={Recording.id} key={i} />
             )}
          </div>
       </div>
    );
 
+}
+
+const SoloButton = ({ solo, trckNmber }: any) => {
+   const dispatch = useAppDispatch();
+   return <button type="button" className={(solo ? 'track_solo track_solo_on' : 'track_solo')}
+      id={`solo_${trckNmber}`} onClick={() => dispatch(handleSolo(trckNmber))} >S</button>;
+}
+const MuteButton = ({ mute, trckNmber }: any) => {
+   const dispatch = useAppDispatch();
+   return <button type="button" className={(mute ? 'track_mute track_mute_on' : 'track_mute')}
+      id={`mute_${trckNmber}`} onClick={() => dispatch(handleMute(trckNmber))} >M</button>;
 }
 
 export default Track;

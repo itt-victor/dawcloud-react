@@ -1,6 +1,4 @@
 import drawingServices from "../services/drawingServices";
-import { masterData} from "../App";
-import spaceTime from "../services/spaceTime";
 import { generateRecordingId } from "../services/utils";
 
 const copyPaste = (recording: any) => {
